@@ -110,7 +110,7 @@ Cоздайте ВМ, разверните на ней Elasticsearch. Устан
 Создаю файл main.tf
 
 ```
-erraform {
+terraform {
   required_providers {
     yandex = {
       source = "yandex-cloud/yandex"
