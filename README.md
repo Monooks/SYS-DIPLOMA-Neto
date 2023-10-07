@@ -102,6 +102,119 @@ Cоздайте ВМ, разверните на ней Elasticsearch. Устан
 
 #### Создайте две ВМ в разных зонах, установите на них сервер nginx, если его там нет. ОС и содержимое ВМ должно быть идентичным, это будут наши веб-сервера.
 
+Для выполнения данной работы я использую терминал с установленной на него системой Ubuntu 22.04.
+С данного терминала я выхожу в сеть интернет для доступа к Yandex.Cloud.
+
+На терминале устанавливаю Terraform по инструкции с Yandex.Cloud.
+
+Создаю файл main.tf
+
+```
+erraform {
+  required_providers {
+    yandex = {
+      source = "yandex-cloud/yandex"
+    }
+  }
+  required_version = ">= 0.13"
+}
+
+resource "yandex_compute_instance" "vm-1" {
+
+  name                      = "linux-vm1"
+  allow_stopping_for_update = true
+  platform_id               = "standard-v3"
+  zone                      = "ru-central1-a"
+
+  resources {
+    cores  = 2
+    memory = 4
+  }
+
+  boot_disk {
+    initialize_params {
+      image_id = "fd8g060b9a67p0mm91af"
+      size     = 10
+    }
+  }
+
+  network_interface {
+    subnet_id = "${yandex_vpc_subnet.subnet-1.id}"
+    nat       = true
+  }
+
+  metadata = {
+    user-data = "${file("./meta.yaml")}"
+  }
+}
+
+resource "yandex_vpc_network" "network-1" {
+  name = "network1"
+}
+
+resource "yandex_vpc_subnet" "subnet-1" {
+  name           = "subnet1"
+  zone           = "ru-central1-a"
+  v4_cidr_blocks = ["192.168.10.0/24"]
+  network_id     = "${yandex_vpc_network.network-1.id}"
+}
+
+resource "yandex_compute_instance" "vm-2" {
+
+  name                      = "linux-vm2"
+  allow_stopping_for_update = true
+  platform_id               = "standard-v3"
+  zone                      = "ru-central1-b"
+
+  resources {
+    cores  = 2
+    memory = 4
+  }
+
+  boot_disk {
+   initialize_params {
+      image_id = "fd8g060b9a67p0mm91af"
+      size     = 10
+    }
+  }
+
+  network_interface {
+    subnet_id = yandex_vpc_subnet.subnet-2.id
+    nat       = true
+  }
+
+  metadata = {
+    user-data = "${file("./meta.yaml")}"
+  }
+}
+
+resource "yandex_vpc_subnet" "subnet-2" {
+  name           = "subnet2"
+  zone           = "ru-central1-b"
+  v4_cidr_blocks = ["192.168.20.0/24"]
+  network_id     = "${yandex_vpc_network.network-1.id}"
+}
+
+output "internal_ip_address_vm_1" {
+  value = yandex_compute_instance.vm-1.network_interface.0.ip_address
+}
+
+output "external_ip_address_vm_1" {
+  value = yandex_compute_instance.vm-1.network_interface.0.nat_ip_address
+}
+
+output "internal_ip_address_vm_2" {
+  value = yandex_compute_instance.vm-2.network_interface.0.ip_address
+}
+
+output "external_ip_address_vm_2" {
+  value = yandex_compute_instance.vm-2.network_interface.0.nat_ip_address
+}
+
+
+}
+```
+
 Используйте набор статичных файлов для сайта. Можно переиспользовать сайт из домашнего задания.
 
 Создайте [Target Group](https://cloud.yandex.com/docs/application-load-balancer/concepts/target-group), включите в неё две созданных ВМ.
