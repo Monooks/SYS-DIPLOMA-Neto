@@ -210,9 +210,6 @@ output "internal_ip_address_vm_2" {
 output "external_ip_address_vm_2" {
   value = yandex_compute_instance.vm-2.network_interface.0.nat_ip_address
 }
-
-
-}
 ```
 
 Используйте набор статичных файлов для сайта. Можно переиспользовать сайт из домашнего задания.
