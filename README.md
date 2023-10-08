@@ -133,7 +133,7 @@ resource "yandex_compute_instance" "vm-1" {
 
   boot_disk {
     initialize_params {
-      image_id = "fd8g060b9a67p0mm91af"
+      image_id = "fd8ecgtorub9r4609man"
       size     = 10
     }
   }
@@ -173,7 +173,7 @@ resource "yandex_compute_instance" "vm-2" {
 
   boot_disk {
    initialize_params {
-      image_id = "fd8g060b9a67p0mm91af"
+      image_id = "fd8ecgtorub9r4609man"
       size     = 10
     }
   }
@@ -211,6 +211,12 @@ output "external_ip_address_vm_2" {
   value = yandex_compute_instance.vm-2.network_interface.0.nat_ip_address
 }
 ```
+При terraform apply создаются две ВМ в разных зонах доступности. С Ubuntu 20.04 LTS  на борту. Это наши веб-сервера.
+
+Теперь надо установить Ansible на терминал.
+И с его помощью установить на веб-сервера nginx, а также залить сайт на них.
+
+
 
 Используйте набор статичных файлов для сайта. Можно переиспользовать сайт из домашнего задания.
 
