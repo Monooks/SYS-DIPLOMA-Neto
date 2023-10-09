@@ -107,9 +107,17 @@ Cоздайте ВМ, разверните на ней Elasticsearch. Устан
 
 На терминале устанавливаю Terraform по инструкции с Yandex.Cloud.
 
-Создаю файл main.tf
+Создаю файл main.tf с учетом условий:
 
-```yaml
+Создайте [Target Group](https://cloud.yandex.com/docs/application-load-balancer/concepts/target-group), включите в неё две созданных ВМ.
+
+Создайте [Backend Group](https://cloud.yandex.com/docs/application-load-balancer/concepts/backend-group), настройте backends на target group, ранее созданную. Настройте healthcheck на корень (/) и порт 80, протокол HTTP.
+
+Создайте [HTTP router](https://cloud.yandex.com/docs/application-load-balancer/concepts/http-router). Путь укажите — /, backend group — созданную ранее.
+
+Создайте [Application load balancer](https://cloud.yandex.com/en/docs/application-load-balancer/) для распределения трафика на веб-сервера, созданные ранее. Укажите HTTP router, созданный ранее, задайте listener тип auto, порт 80.
+
+```
 terraform {
   required_providers {
     yandex = {
@@ -172,14 +180,14 @@ resource "yandex_compute_instance" "vm-2" {
   }
 
   boot_disk {
-   initialize_params {
+    initialize_params {
       image_id = "fd8ecgtorub9r4609man"
       size     = 10
     }
   }
 
   network_interface {
-    subnet_id = yandex_vpc_subnet.subnet-2.id
+    subnet_id = "${yandex_vpc_subnet.subnet-2.id}"
     nat       = true
   }
 
@@ -209,6 +217,120 @@ output "internal_ip_address_vm_2" {
 
 output "external_ip_address_vm_2" {
   value = yandex_compute_instance.vm-2.network_interface.0.nat_ip_address
+}
+
+#output "external_ip_address_l7" {
+#  value = yandex_alb_load_balancer.test-balancer.network_interface.0.nat_ip_address
+#}
+
+resource "yandex_alb_target_group" "foo" {
+  name           = "targetgroup"
+
+  target {
+    subnet_id    = "${yandex_vpc_subnet.subnet-1.id}"
+    ip_address   = "${yandex_compute_instance.vm-1.network_interface.0.ip_address}"
+  }
+
+  target {
+    subnet_id    = "${yandex_vpc_subnet.subnet-2.id}"
+    ip_address   = "${yandex_compute_instance.vm-2.network_interface.0.ip_address}"
+  }
+}
+
+resource "yandex_alb_backend_group" "test-backend-group" {
+  name                     = "backendgroup"
+  session_affinity {
+    connection {
+      source_ip = true
+    }
+  }
+
+  http_backend {
+    name                   = "back1"
+    weight                 = 1
+    port                   = 80
+    target_group_ids       = ["${yandex_alb_target_group.foo.id}"]
+    load_balancing_config {
+      panic_threshold      = 90
+    }
+    healthcheck {
+      timeout              = "10s"
+      interval             = "2s"
+      healthy_threshold    = 10
+      unhealthy_threshold  = 15
+      http_healthcheck {
+        path               = "/"
+      }
+    }
+  }
+}
+
+resource "yandex_alb_http_router" "tf-router" {
+  name          = "groovy"
+  labels        = {
+    tf-label    = "tf-label-value"
+    empty-label = ""
+  }
+}
+
+resource "yandex_alb_virtual_host" "my-virtual-host" {
+  name                    = "billy"
+  http_router_id          = yandex_alb_http_router.tf-router.id
+  route {
+    name                  = "mainroute"
+    http_route {
+      http_route_action {
+        backend_group_id  = "${yandex_alb_backend_group.test-backend-group.id}"
+        timeout           = "60s"
+      }
+    }
+  }
+}
+
+resource "yandex_alb_load_balancer" "test-balancer" {
+  name        = "jimmy7"
+  network_id  = "${yandex_vpc_network.network-1.id}"
+#  security_group_ids = ["${yandex_vpc_security_group.default.id}"]
+
+ allocation_policy {
+    location {
+      zone_id   = "ru-central1-a"
+      subnet_id = "${yandex_vpc_subnet.subnet-1.id}"
+    }
+  }
+
+#  allocation_policy {
+#    location {
+#      zone_id   = "ru-central1-b"
+#      subnet_id = "yandex_vpc_subnet.subnet-2.id" 
+#    }
+#  }
+
+  listener {
+    name = "bobby"
+    endpoint {
+      address {
+        external_ipv4_address {
+        }
+      }
+      ports = [ 80 ]
+    }
+    http {
+      handler {
+        http_router_id = "${yandex_alb_http_router.tf-router.id}"
+      }
+    }
+  }
+
+#  log_options {
+#    log_group_id = "<идентификатор_лог-группы>"
+#    discard_rule {
+#      http_codes          = ["<HTTP-код>"]
+#      http_code_intervals = ["<класс_HTTP-кодов>"]
+#      grpc_codes          = ["<gRPC-код>"]
+#      discard_percent     = <доля_отбрасываемых_логов>
+#    }
+#  }
 }
 ```
 При terraform apply создаются две ВМ в разных зонах доступности. С Ubuntu 20.04 LTS  на борту. Это наши веб-сервера.
@@ -498,7 +620,7 @@ SYS-18
 <main class="main">
 <div class="box">
 <div class="box-base">
-<h1>Диплом</h1>
+<h1>Диплом Емельянова Михаила Вадимовича группы SYS-18</h1>
 <p>Диплом - это очень круто!</p>
 </div>
 <div class="box-side">
@@ -565,7 +687,7 @@ SYS-18
 </div>
 </main>
 <footer class="footer"  id="footer">
-Я заебался это пилить! Можно зачет автоматом?
+Я замаялся это пилить! Можно зачет автоматом?
 </footer>
 </body>
 </html>
