@@ -109,7 +109,7 @@ Cоздайте ВМ, разверните на ней Elasticsearch. Устан
 
 Создаю файл main.tf
 
-```
+```yaml
 terraform {
   required_providers {
     yandex = {
@@ -218,7 +218,7 @@ output "external_ip_address_vm_2" {
 
 Устанавливаем Ansible на терминал.
 Создаем конфигурационный файл ansible.cfg
-```
+```yaml
 [defaults]
 inventory = /root/inventory.ini
 remote_user = user
@@ -232,7 +232,7 @@ become_user = root
 become_method = sudo
 ```
 Описываем окружение inventory.ini. Внешние IP адреса берем из terraform output.
-```
+```yaml
 [webserwers:children]
 nginx1
 nginx2
@@ -244,7 +244,7 @@ nginx2
 158.160.9.93
 ```
 Описываем playbook.yaml
-```
+```yaml
 ---
 - name: "Get up nginx"
   hosts: all
@@ -253,14 +253,14 @@ nginx2
 ...
 ```
 В папке "defaults" роли "nginx" редактируем main.yml
-```
+```yaml
 ---
 # defaults file for apache2
 port: "80"
 ...
 ```
 В папке "tasks" роли "nginx" редактируем main.yml
-```
+```yaml
 ---
 # tasks file for nginx
 
@@ -288,12 +288,12 @@ port: "80"
 ...
 ```
 В папке "templates" роли "nginx" редактируем index.html.j2.
-```
+```html
 <!DOCTYPE html>
 <html lang="ru" >
 <head>
 <meta charset="UTF-8">
-<title>sys-18</title>
+<title>Diploma-sys-18</title>
 <style type="text/css">
 a{
 color: #fff;
@@ -485,13 +485,13 @@ margin: 0;
 <body>
 <header class="header">
 <a class="logo">
-LOGO
+SYS-18
 </a>
 <nav class="nav">
-<a href="#posts" class="nav-item">Посты</a>
-<a href="#comments" class="nav-item">Комменты</a>
-<a href="#footer" class="nav-item">Подвал</a>
-<a href="#posts" class="nav-item">Посты2</a>
+<a href="#posts" class="nav-item">Студенты</a>
+<a href="#comments" class="nav-item">Кураторы</a>
+<a href="#footer" class="nav-item">Аспиранты</a>
+<a href="#posts" class="nav-item">Эксперты</a>
 </nav>
 
 </header>
@@ -509,9 +509,9 @@ LOGO
 </div>
 <div class="content">
 <div class="banners">
-<div class="banner">Нетология</div>
-<div class="banner">Это Наше</div>
-<div class="banner">Всё!</div>
+<div class="banner">Нетология - ...</div>
+<div class="banner">...это наше...</div>
+<div class="banner">...всё!</div>
 </div>
 <div class="posts"  id="posts">
 <div class="post">
