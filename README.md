@@ -698,3 +698,6 @@ SYS-18
 ![Скриншот-2](https://github.com/Monooks/SYS-DIPLOMA-Neto/blob/main/img/dip_2.png)
 ![Скриншот-2](https://github.com/Monooks/SYS-DIPLOMA-Neto/blob/main/img/dip_3.png)
 ![Скриншот-2](https://github.com/Monooks/SYS-DIPLOMA-Neto/blob/main/img/dip_4.png)
+
+
+
