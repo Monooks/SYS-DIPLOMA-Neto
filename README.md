@@ -874,7 +874,7 @@ http {
 	##
         # Virtual Host Configs
         ##
-Написать хо
+
         include /etc/nginx/conf.d/myapp.conf;
 }
 
