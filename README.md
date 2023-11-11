@@ -698,6 +698,359 @@ SYS-18
 ![Скриншот-2](https://github.com/Monooks/SYS-DIPLOMA-Neto/blob/main/img/dip_2.png)
 ![Скриншот-2](https://github.com/Monooks/SYS-DIPLOMA-Neto/blob/main/img/dip_3.png)
 ![Скриншот-2](https://github.com/Monooks/SYS-DIPLOMA-Neto/blob/main/img/dip_4.png)
+---
+ставим prometheus:
+```bash
+# ssh user@158.160.125.19 -i id_rsa
+$ sudo -i
+# useradd --no-create-home --shell /bin/false prometheus
+# wget https://github.com/prometheus/prometheus/releases/download/v2.47.1/prometheus-2.47.1.linux-amd64.tar.gz
+# tar xvfz prometheus-2.47.1.linux-amd64.tar.gz
+# cd prometheus-2.47.1.linux-amd64/
+# mkdir /etc/prometheus
+# mkdir /var/lib/prometheus
+# cp ./prometheus promtool /usr/local/bin/
+# cp -R ./console_libraries /etc/prometheus
+# cp -R ./consoles /etc/prometheus
+# cp ./prometheus.yml /etc/prometheus
+# chown -R prometheus:prometheus /etc/prometheus /var/lib/prometheus
+# chown prometheus:prometheus /usr/local/bin/prometheus
+# chown prometheus:prometheus /usr/local/bin/promtool
+# nano /etc/systemd/system/prometheus.service
+```
+[Unit]
+Description=Prometheus Service Netology Diploma
+After=network.target
+[Service]
+User=prometheus
+Group=prometheus
+Type=simple
+ExecStart=/usr/local/bin/prometheus \
+--config.file /etc/prometheus/prometheus.yml \
+--storage.tsdb.path /var/lib/prometheus/ \
+--web.console.templates=/etc/prometheus/consoles \
+--web.console.libraries=/etc/prometheus/console_libraries
+ExecReload=/bin/kill -HUP $MAINPID Restart=on-failure
+[Install]
+WantedBy=multi-user.target
+```
+# chown -R prometheus:prometheus /var/lib/prometheus
+# systemctl enable prometheus
+# sudo systemctl start prometheus
+# sudo systemctl status prometheus
+```
+ноде экспортер
+```bash
+# ssh user@158.160.125.19 -i id_rsa
+$ sudo -i
+# sudo useradd --no-create-home --shell /bin/false prometheus
+# wget https://github.com/prometheus/node_exporter/releases/download/v1.6.1/node_exporter-1.6.1.linux-amd64.tar.gz
+# tar xvfz node_exporter-1.6.1.linux-amd64.tar.gz
+# cd node_exporter-1.6.1.linux-amd64/
+# mkdir /etc/prometheus
+# mkdir /etc/prometheus/node-exporter
+# cp ./* /etc/prometheus/node-exporter
+# chown -R prometheus:prometheus /etc/prometheus/node-exporter/
+# nano /etc/systemd/system/node-exporter.service
+```
+[Unit]
+Description=Node Exporter Lesson 9.4
+After=network.target
+[Service]
+User=prometheus
+Group=prometheus
+Type=simple
+ExecStart=/etc/prometheus/node-exporter/node_exporter
+[Install]
+WantedBy=multi-user.target
+```bash
+# sudo systemctl enable node-exporter
+# sudo systemctl start node-exporter
+# sudo systemctl status node-exporter
+```
+правим конфиг prometheus
+```bash
+# ssh user@158.160.125.19 -i id_rsa
+$ sudo -i
+# nano /etc/prometheus/prometheus.yml
+```
+scrape_configs:
+  — job_name: 'prometheus'
+    scrape_interval: 5s
+    static_configs:
+      — targets: ['localhost:9090', 'localhost:9100']
+```bash
+# systemctl restart prometheus
+# systemctl status prometheus
+```
+nginxlog-exporter
+```bash
+# ssh user@158.160.125.19 -i id_rsa
+$ sudo -i
+# wget https://github.com/martin-helmich/prometheus-nginxlog-exporter/releases/download/v1.9.2/prometheus-nginxlog-exporter_1.9.2_linux_amd64.deb
+# apt install ./prometheus-nginxlog-exporter_1.9.2_linux_amd64.deb
+# wget -O /etc/systemd/system/prometheus-nginxlog-exporter.service https://raw.githubusercontent.com/martin-helmich/prometheus-nginxlog-exporter/master/res/package/prometheus-nginxlog-exporter.service
+# nano /etc/systemd/system/prometheus-nginxlog-exporter.service
+```
+[Unit]
+Description=NGINX metrics exporter for Prometheus
+Wants=network-online.target
+After=network-online.target
+
+[Service]
+ExecStart=/usr/sbin/prometheus-nginxlog-exporter -config-file /etc/prometheus-nginxlog-exporter.hcl
+Restart=always
+ProtectSystem=full
+CapabilityBoundingSet=
+User=prometheus
+Group=prometheus
+Type=simple
+
+[Install]
+WantedBy=multi-user.target
+```bash
+# nano /etc/nginx/nginx.conf
+```
+user www-data;
+worker_processes auto;
+pid /run/nginx.pid;
+include /etc/nginx/modules-enabled/*.conf;
+
+events {
+        worker_connections 768;
+        # multi_accept on;
+}
+
+http {
+
+        ##
+        # Basic Settings
+        ##
+
+        sendfile on;
+        tcp_nopush on;
+        tcp_nodelay on;
+        keepalive_timeout 65;
+        types_hash_max_size 2048;
+        # server_tokens off;
+
+        # server_names_hash_bucket_size 64;
+        # server_name_in_redirect off;
+
+        include /etc/nginx/mime.types;
+        default_type application/octet-stream;
+
+        ##
+        # SSL Settings
+        ##
+
+        ssl_protocols TLSv1 TLSv1.1 TLSv1.2 TLSv1.3; # Dropping SSLv3, ref: POODLE
+        ssl_prefer_server_ciphers on;
+
+        # logging config
+        log_format custom   '$remote_addr - $remote_user [$time_local] '
+                            '"$request" $status $body_bytes_sent '
+                            '"$http_referer" "$http_user_agent" "$http_x_forwarded_for"';
+        ##Написать хо
+        # Logging Settings
+        ##
+
+        access_log /var/log/nginx/access.log custom;
+        error_log /var/log/nginx/error.log;
+
+        ##
+        # Gzip Settings
+        ##
+
+        gzip on;
+
+        # gzip_vary on;
+        # gzip_proxied any;
+        # gzip_comp_level 6;
+        # gzip_buffers 16 8k;
+        # gzip_http_version 1.1;
+        # gzip_types text/plain text/css application/json application/javascript text/xml application/xml appli>
+
+	##
+        # Virtual Host Configs
+        ##
+Написать хо
+        include /etc/nginx/conf.d/myapp.conf;
+}
+
+
+#mail {
+#       # See sample authentication script at:
+#       # http://wiki.nginx.org/ImapAuthenticateWithApachePhpScript
+# 
+#       # auth_http localhost/auth.php;
+#       # pop3_capabilities "TOP" "USER";
+#       # imap_capabilities "IMAP4rev1" "UIDPLUS";
+# 
+#       server {
+#               listen     localhost:110;
+#               protocol   pop3;
+#               proxy      on;
+#       }
+# 
+#       server {
+#               listen     localhost:143;
+#               protocol   imap;
+#               proxy      on;
+#       }
+#}
+```bash
+# rm -rf /etc/nginx/sites-enabled/default
+# nano /etc/nginx/conf.d/myapp.conf
+```
+server {
+
+  listen 80 default_server;
+  # remove the escape char if you are going to use this config
+  server_name \_;
+
+  root /var/www/html;
+  index index.html index.htm index.nginx-debian.html;
+
+  location / {
+    try_files $uri $uri/ =404;
+  }
+
+}
+```bash
+# systemctl restart nginx
+# systemctl status nginx
+# systemctl daemon-reload
+# chown -R prometheus:prometheus /var/log/nginx/access.log
+# systemctl restart prometheus-nginxlog-exporter
+# systemctl status prometheus-nginxlog-exporter
+```
+ставим графану
+```bash
+# ssh user@158.160.125.19 -i id_rsa
+$ sudo -i
+# apt-get install -y adduser libfontconfig1 musl
+# wget https://dl.grafana.com/oss/release/grafana_10.1.5_amd64.deb
+# dpkg -i grafana_10.1.5_amd64.deb
+# systemctl enable grafana-server
+# systemctl start grafana-server
+# systemctl status grafana-server
+```
+
+fd8nhb6fd0hpl40gm797 - ключ от дебиана
+
+ставим Elasticsearch:
+```bash
+# ssh user@158.160.125.19 -i id_rsa
+$ sudo -i
+# apt update && apt install gnupg apt-transport-https
+# wget -qO - https://artifacts.elastic.co/GPG-KEY-elasticsearch | sudo apt-key add -
+# echo "deb [trusted=yes] https://mirror.yandex.ru/mirrors/elastic/7/ stable main" | sudo tee /etc/apt/sources.list.d/elastic-7.x.list
+# apt update && apt-get install elasticsearch
+# systemctl daemon-reload
+# systemctl enable elasticsearch.service
+# systemctl start elasticsearch.service
+# systemctl status elasticsearch.service
+# curl 'localhost:9200/_cluster/health?pretty'
+```
+настройка эластикаНаписать хо
+```bash
+# nano /etc/elasticsearch/elasticsearch.yml
+```
+
+cluster.name: diplomaneto
+node.name: node-1
+path.data: /var/lib/elasticsearch
+path.logs: /var/log/elasticsearch
+network.host: 0.0.0.0
+discovery.seed_hosts: ["127.0.0.1", "[::1]"]
+```bash
+# systemctl restart elasticsearpaths:
+    - /var/log/*.log
+ch.service
+# systemctl status elasticsearch.service
+```
+
+установка Kibana:
+```bash
+# ssh user@158.160.125.19 -i id_rsa
+$ sudo -i
+# apt update && apt install gnupg apt-transport-https
+# wget -qO - https://artifacts.elastic.co/GPG-KEY-elasticsearch | sudo apt-key add -
+# echo "deb [trusted=yes] https://mirror.yandex.ru/mirrors/elastic/7/ stable main" | sudo tee /etc/apt/sources.list.d/elastic-7.x.list
+# apt update && apt-get install kibana
+# systemctl daemon-reload
+# systemctl enable kibana.service
+# systemctl start kibana.service
+# systemctl status kibana.service
+```
+правим Кибану:
+```bash
+# nano /etc/kibana/kibana.yml
+```
+server.host: "0.0.0.0"
+elasticsearch.hosts: ["http://84.201.134.46:9200"]
+
+в браузере вводим:
+
+http://84.201.158.212:5601/app/dev_tools#/console
+
+делаем запрос к Эластику:
+
+GET /_cluster/health?pretty
+
+Ставим файлбитсы на сервера c nginx:
+```bash
+# ssh user@158.160.125.19 -i id_rsa
+$ sudo -i
+# apt update && apt install gnupg apt-transport-https
+# wget -qO - https://artifacts.elastic.co/GPG-KEY-elasticsearch | sudo apt-key add -
+# echo "deb [trusted=yes] https://mirror.yandex.ru/mirrors/elastic/7/ stable main" | sudo tee /etc/apt/sources.list.d/elastic-7.x.list
+# apt update && apt-get install filebeat
+# systemctl daemon-reload
+# systemctl enable filebeat.service
+# systemctl start filebeat.service
+# systemctl status filebeat.service
+```
+Правим конфиг Фаилбитс:
+```bash
+# nano /etc/filebeat/filebeat.yml
+```
+  enabled: true
+  paths:
+    - /var/log/nginx/*.log
+    
+    
+setup.kibana:
+  host: "84.201.158.212:5601"
+
+output.elasticsearch:
+  hosts: ["84.201.134.46:9200"]
+  
+```bash
+# systemctl restart filebeat.service
+# systemctl status filebeat.service
+```
+Создаем группы безопасности
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 
 
