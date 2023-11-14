@@ -119,7 +119,7 @@ Cоздайте ВМ, разверните на ней Elasticsearch. Устан
 
 [main.tf](https://github.com/Monooks/SYS-DIPLOMA-Neto/blob/main/img/main.tf)
 
-При terraform apply создаются две ВМ в разных зонах доступности. С Ubuntu 20.04 LTS  на борту. Это наши веб-сервера. А так же все остальные необходимые ресурсы.
+При terraform apply создаются две ВМ: web_1 и web_2, в разных зонах доступности. С Ubuntu 20.04 LTS  на борту. Это наши веб-сервера. А так же все остальные необходимые ресурсы.
 
 Terraform outputs:
 
@@ -154,9 +154,9 @@ Terraform outputs:
 [internal_ip_address_web_2 = "192.168.20.34"](http://192.168.20.34)
 
 Теперь надо установить Ansible на терминал.
-И с его помощью установить на веб-сервера nginx, а также залить сайт на них.
+И с его помощью установить на web-сервера nginx, а также залить сайт на них.
 
-Устанавливаем Ansible на терминал.
+Устанавливаем ansible на терминал.
 Создаем конфигурационный файл ansible.cfg
 
 [ansible.cfg](https://github.com/Monooks/SYS-DIPLOMA-Neto/blob/main/img/ansible.cfg)
@@ -196,7 +196,7 @@ curl -v 158.160.132.187:80
 
 *Создайте ВМ, установите туда Grafana. Настройте её на взаимодействие с ранее развернутым Prometheus. Настройте дешборды с отображением метрик, минимальный набор — Utilization, Saturation, Errors для CPU, RAM, диски, сеть, http_response_count_total, http_response_size_bytes. Добавьте необходимые tresholds на соответствующие графики.*
 
-#### Cтавим prometheus
+#### Cтавим prometheus на ВМ prom_3
 
 Вводим команды:
 
@@ -237,6 +237,8 @@ sudo systemctl status prometheus
 ```bash
 nano /etc/prometheus/prometheus.yml
 ```
+
+Для описания targets используем внутренние IP адреса web-серверов.
 
 [prometheus.yml](https://github.com/Monooks/SYS-DIPLOMA-Neto/blob/main/img/prometheus.yml)
 
@@ -283,21 +285,7 @@ WantedBy=multi-user.target
 # sudo systemctl start node-exporter
 # sudo systemctl status node-exporter
 ```
-правим конфиг prometheus
-```bash
-# ssh user@158.160.125.19 -i id_rsa
-$ sudo -i
-# nano /etc/prometheus/prometheus.yml
-```
-scrape_configs:
-  — job_name: 'prometheus'
-    scrape_interval: 5s
-    static_configs:
-      — targets: ['localhost:9090', 'localhost:9100']
-```bash
-# systemctl restart prometheus
-# systemctl status prometheus
-```
+
 nginxlog-exporter
 ```bash
 # ssh user@158.160.125.19 -i id_rsa
