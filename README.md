@@ -182,7 +182,7 @@ ansible-playbook -b /home/imonooks/Загрузки/Task4/playbook4.yam
 curl -v 158.160.132.187:80
 ```
 
-[external_ip_address_l7 = "158.160.130.195"](http://158.160.130.195) - адрес L7 балансировщика.
+[external_ip_address_l7 = "158.160.130.195"](http://158.160.130.195) - внешний адрес L7 балансировщика.
 
 ---
 
@@ -193,7 +193,8 @@ curl -v 158.160.132.187:80
 
 Создайте ВМ, установите туда Grafana. Настройте её на взаимодействие с ранее развернутым Prometheus. Настройте дешборды с отображением метрик, минимальный набор — Utilization, Saturation, Errors для CPU, RAM, диски, сеть, http_response_count_total, http_response_size_bytes. Добавьте необходимые tresholds на соответствующие графики.
 
-Cтавим Prometheus.
+#### Cтавим Prometheus
+
 Вводим команды:
 
 ```bash
@@ -217,11 +218,13 @@ nano /etc/systemd/system/prometheus.service
 [prometheus.service](https://github.com/Monooks/SYS-DIPLOMA-Neto/blob/main/img/prometheus.service)
 
 ```
-# chown -R prometheus:prometheus /var/lib/prometheus
-# systemctl enable prometheus
-# sudo systemctl start prometheus
-# sudo systemctl status prometheus
+chown -R prometheus:prometheus /var/lib/prometheus
+systemctl enable prometheus
+sudo systemctl start prometheus
+sudo systemctl status prometheus
 ```
+![Скриншот-1](https://github.com/Monooks/SYS-DIPLOMA-Neto/blob/main/img/dip_1.png)
+
 ноде экспортер
 ```bash
 # ssh user@158.160.125.19 -i id_rsa
