@@ -121,7 +121,7 @@ Cоздайте ВМ, разверните на ней Elasticsearch. Устан
 
 При terraform apply создаются две ВМ в разных зонах доступности. С Ubuntu 20.04 LTS  на борту. Это наши веб-сервера. А так же все остальные необходимые ресурсы.
 
-Outputs:
+Terraform outputs:
 
 [external_ip_address_bast_7 = "158.160.56.142"](http://158.160.56.142)
 
@@ -181,6 +181,7 @@ ansible-playbook -b /home/imonooks/Загрузки/Task4/playbook4.yam
 ```
 curl -v 158.160.132.187:80
 ```
+[external_ip_address_l7 = "158.160.130.195"](http://158.160.130.195)
 ---
 
 ## 2. Устройство мониторинга посредством Prometheus и Grafana.
