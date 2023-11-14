@@ -167,7 +167,7 @@ Terraform outputs:
 
 Описываем playbook.yaml и роль:
 
-[Nginx_role.zip](https://github.com/Monooks/SYS-DIPLOMA-Neto/blob/main/img/Nginx_role.zip)
+[nginx_role.zip](https://github.com/Monooks/SYS-DIPLOMA-Neto/blob/main/img/nginx_role.zip)
 
 Вводим команды:
 
