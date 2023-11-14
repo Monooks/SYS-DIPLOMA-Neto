@@ -521,7 +521,7 @@ $ sudo -i
 
 ### Сеть
 
-*Разверните один VPC. Сервера web, Elasticsearch поместите в приватные подсети. Сервера Zabbix, Kibana, application load balancer определите в публичную подсеть.*
+*Разверните один VPC. Сервера web, Elasticsearch, Prometheus поместите в приватные подсети. Сервера Grafana, Kibana, application load balancer определите в публичную подсеть.*
 
 *Настройте [Security Groups](https://cloud.yandex.com/docs/vpc/concepts/security-groups) соответствующих сервисов на входящий трафик только к нужным портам.*
 
@@ -530,8 +530,57 @@ $ sudo -i
 #### Настраиваем в Yandex.Cloud правила групп безопасности
 
 
-# Тут у меня пробел. Группы я создал в терраформе. Группы по хостам раскидал в терраформе. А правила пока не родились в голове.
+### SSH security group
 
+группа для бастион-хоста
+
+Назначена для ВМ:
+- bast_7.
+
+Правила входящего трафика:
+
+![Скриншот-28](https://github.com/Monooks/SYS-DIPLOMA-Neto/blob/main/img/dip_28.png)
+
+Правила исходящего трафика:
+
+![Скриншот-29](https://github.com/Monooks/SYS-DIPLOMA-Neto/blob/main/img/dip_29.png)
+
+
+### Open security group
+
+группа для доступа извне к Grafana, Kibana, application load balancer по 80 порту.
+
+Назначена для ВМ:
+- graf_4;
+- kib_6;
+- Application Load Balancer.
+
+Правила входящего трафика:
+
+![Скриншот-30](https://github.com/Monooks/SYS-DIPLOMA-Neto/blob/main/img/dip_30.png)
+
+Правила исходящего трафика:
+
+![Скриншот-31](https://github.com/Monooks/SYS-DIPLOMA-Neto/blob/main/img/dip_31.png)
+
+
+### Private security group
+
+группа для скрытия Web, Prometheus, application load balancer.
+
+Назначена для ВМ:
+- web_1;
+- web_2;
+- prom_3;
+- elas_5.
+
+Правила входящего трафика:
+
+![Скриншот-32](https://github.com/Monooks/SYS-DIPLOMA-Neto/blob/main/img/dip_32.png)
+
+Правила исходящего трафика:
+
+![Скриншот-33](https://github.com/Monooks/SYS-DIPLOMA-Neto/blob/main/img/dip_33.png)
 
 ---
 
