@@ -153,7 +153,7 @@ Terraform outputs:
 
 [internal_ip_address_web_2 = "192.168.20.34"](http://192.168.20.34)
 
-Теперь надо установить Ansible на терминал.
+Теперь надо установить ansible на терминал.
 И с его помощью установить на web-сервера nginx, а также залить сайт на них.
 
 Устанавливаем ansible на терминал.
@@ -253,182 +253,89 @@ systemctl status prometheus
 
 ![Скриншот-3](https://github.com/Monooks/SYS-DIPLOMA-Neto/blob/main/img/dip_3.png)
 
-#### Ставим node-exporter на оба web-сервера
+#### Ставим node-exporter на оба web-сервера web_1 и web_2
 
 Вводим команды:
 
 ```bash
-# ssh user@158.160.125.19 -i id_rsa
-$ sudo -i
-# sudo useradd --no-create-home --shell /bin/false prometheus
-# wget https://github.com/prometheus/node_exporter/releases/download/v1.6.1/node_exporter-1.6.1.linux-amd64.tar.gz
-# tar xvfz node_exporter-1.6.1.linux-amd64.tar.gz
-# cd node_exporter-1.6.1.linux-amd64/
-# mkdir /etc/prometheus
-# mkdir /etc/prometheus/node-exporter
-# cp ./* /etc/prometheus/node-exporter
-# chown -R prometheus:prometheus /etc/prometheus/node-exporter/
-# nano /etc/systemd/system/node-exporter.service
+ssh user@158.160.125.19 -i id_rsa
+sudo -i
+sudo useradd --no-create-home --shell /bin/false prometheus
+wget https://github.com/prometheus/node_exporter/releases/download/v1.6.1/node_exporter-1.6.1.linux-amd64.tar.gz
+tar xvfz node_exporter-1.6.1.linux-amd64.tar.gz
+cd node_exporter-1.6.1.linux-amd64/
+mkdir /etc/prometheus
+mkdir /etc/prometheus/node-exporter
+cp ./* /etc/prometheus/node-exporter
+chown -R prometheus:prometheus /etc/prometheus/node-exporter/
+nano /etc/systemd/system/node-exporter.service
 ```
-[Unit]
-Description=Node Exporter Lesson 9.4
-After=network.target
-[Service]
-User=prometheus
-Group=prometheus
-Type=simple
-ExecStart=/etc/prometheus/node-exporter/node_exporter
-[Install]
-WantedBy=multi-user.target
+
+[node-exporter.service](https://github.com/Monooks/SYS-DIPLOMA-Neto/blob/main/img/node-exporter.service)
+
 ```bash
-# sudo systemctl enable node-exporter
-# sudo systemctl start node-exporter
-# sudo systemctl status node-exporter
+systemctl enable node-exporter
+systemctl start node-exporter
+systemctl status node-exporter
 ```
 
-nginxlog-exporter
+![Скриншот-5](https://github.com/Monooks/SYS-DIPLOMA-Neto/blob/main/img/dip_5.png)
+
+![Скриншот-6](https://github.com/Monooks/SYS-DIPLOMA-Neto/blob/main/img/dip_6.png)
+
+#### Ставим prometheus-nginxlog-exporter на оба web-сервера web_1 и web_2
+
+Вводим команды:
+
 ```bash
-# ssh user@158.160.125.19 -i id_rsa
-$ sudo -i
-# wget https://github.com/martin-helmich/prometheus-nginxlog-exporter/releases/download/v1.9.2/prometheus-nginxlog-exporter_1.9.2_linux_amd64.deb
-# apt install ./prometheus-nginxlog-exporter_1.9.2_linux_amd64.deb
-# wget -O /etc/systemd/system/prometheus-nginxlog-exporter.service https://raw.githubusercontent.com/martin-helmich/prometheus-nginxlog-exporter/master/res/package/prometheus-nginxlog-exporter.service
-# nano /etc/systemd/system/prometheus-nginxlog-exporter.service
+ssh user@158.160.125.19 -i id_rsa
+sudo -i
+wget https://github.com/martin-helmich/prometheus-nginxlog-exporter/releases/download/v1.9.2/prometheus-nginxlog-exporter_1.9.2_linux_amd64.deb
+apt install ./prometheus-nginxlog-exporter_1.9.2_linux_amd64.deb
+wget -O /etc/systemd/system/prometheus-nginxlog-exporter.service https://raw.githubusercontent.com/martin-helmich/prometheus-nginxlog-exporter/master/res/package/prometheus-nginxlog-exporter.service
+nano /etc/systemd/system/prometheus-nginxlog-exporter.service
 ```
-[Unit]
-Description=NGINX metrics exporter for Prometheus
-Wants=network-online.target
-After=network-online.target
 
-[Service]
-ExecStart=/usr/sbin/prometheus-nginxlog-exporter -config-file /etc/prometheus-nginxlog-exporter.hcl
-Restart=always
-ProtectSystem=full
-CapabilityBoundingSet=
-User=prometheus
-Group=prometheus
-Type=simple
+[prometheus-nginxlog-exporter.service](https://github.com/Monooks/SYS-DIPLOMA-Neto/blob/main/img/prometheus-nginxlog-exporter.service)
 
-[Install]
-WantedBy=multi-user.target
+Правим nginx.conf:
+
 ```bash
-# nano /etc/nginx/nginx.conf
+nano /etc/nginx/nginx.conf
 ```
-user www-data;
-worker_processes auto;
-pid /run/nginx.pid;
-include /etc/nginx/modules-enabled/*.conf;
 
-events {
-        worker_connections 768;
-        # multi_accept on;
-}
+[nginx.conf](https://github.com/Monooks/SYS-DIPLOMA-Neto/blob/main/img/nginx.conf)
 
-http {
+Правим myapp.conf:
 
-        ##
-        # Basic Settings
-        ##
-
-        sendfile on;
-        tcp_nopush on;
-        tcp_nodelay on;
-        keepalive_timeout 65;
-        types_hash_max_size 2048;
-        # server_tokens off;
-
-        # server_names_hash_bucket_size 64;
-        # server_name_in_redirect off;
-
-        include /etc/nginx/mime.types;
-        default_type application/octet-stream;
-
-        ##
-        # SSL Settings
-        ##
-
-        ssl_protocols TLSv1 TLSv1.1 TLSv1.2 TLSv1.3; # Dropping SSLv3, ref: POODLE
-        ssl_prefer_server_ciphers on;
-
-        # logging config
-        log_format custom   '$remote_addr - $remote_user [$time_local] '
-                            '"$request" $status $body_bytes_sent '
-                            '"$http_referer" "$http_user_agent" "$http_x_forwarded_for"';
-        ##Написать хо
-        # Logging Settings
-        ##
-
-        access_log /var/log/nginx/access.log custom;
-        error_log /var/log/nginx/error.log;
-
-        ##
-        # Gzip Settings
-        ##
-
-        gzip on;
-
-        # gzip_vary on;
-        # gzip_proxied any;
-        # gzip_comp_level 6;
-        # gzip_buffers 16 8k;
-        # gzip_http_version 1.1;
-        # gzip_types text/plain text/css application/json application/javascript text/xml application/xml appli>
-
-	##
-        # Virtual Host Configs
-        ##
-
-        include /etc/nginx/conf.d/myapp.conf;
-}
-
-
-#mail {
-#       # See sample authentication script at:
-#       # http://wiki.nginx.org/ImapAuthenticateWithApachePhpScript
-# 
-#       # auth_http localhost/auth.php;
-#       # pop3_capabilities "TOP" "USER";
-#       # imap_capabilities "IMAP4rev1" "UIDPLUS";
-# 
-#       server {
-#               listen     localhost:110;
-#               protocol   pop3;
-#               proxy      on;
-#       }
-# 
-#       server {
-#               listen     localhost:143;
-#               protocol   imap;
-#               proxy      on;
-#       }
-#}
 ```bash
 # rm -rf /etc/nginx/sites-enabled/default
 # nano /etc/nginx/conf.d/myapp.conf
 ```
-server {
 
-  listen 80 default_server;
-  # remove the escape char if you are going to use this config
-  server_name \_;
+[myapp.conf](https://github.com/Monooks/SYS-DIPLOMA-Neto/blob/main/img/myapp.conf)
 
-  root /var/www/html;
-  index index.html index.htm index.nginx-debian.html;
-
-  location / {
-    try_files $uri $uri/ =404;
-  }
-
-}
 ```bash
 # systemctl restart nginx
 # systemctl status nginx
+```
+
+![Скриншот-7](https://github.com/Monooks/SYS-DIPLOMA-Neto/blob/main/img/dip_7.png)
+
+```bash
 # systemctl daemon-reload
 # chown -R prometheus:prometheus /var/log/nginx/access.log
 # systemctl restart prometheus-nginxlog-exporter
 # systemctl status prometheus-nginxlog-exporter
 ```
-ставим графану
+
+![Скриншот-8](https://github.com/Monooks/SYS-DIPLOMA-Neto/blob/main/img/dip_8.png)
+
+[Targets prometheus](http://158.160.38.127:9090/targets?search=)
+
+![Скриншот-9](https://github.com/Monooks/SYS-DIPLOMA-Neto/blob/main/img/dip_9.png)
+
+#### Cтавим grafana на ВМ graf_4
 ```bash
 # ssh user@158.160.125.19 -i id_rsa
 $ sudo -i
