@@ -363,43 +363,74 @@ systemctl status grafana-server
 
 пароль: admin
 
+Настраиваем привязку ресурсов и дашборды в кибане.
+
 ![Скриншот-13](https://github.com/Monooks/SYS-DIPLOMA-Neto/blob/main/img/dip_13.png)
 
 ---
 
+## 3. Устройство логирования посредством elasticsearch, kibana, filebeat.
 
+### Логи
 
-ставим Elasticsearch:
+*Cоздайте ВМ, разверните на ней Elasticsearch. Установите filebeat в ВМ к веб-серверам, настройте на отправку access.log, error.log nginx в Elasticsearch.*
+
+*Создайте ВМ, разверните на ней Kibana, сконфигурируйте соединение с Elasticsearch.*
+
+#### Cтавим Elasticsearch на ВМ elas_5:
+
+Вводим команды:
+
 ```bash
-# ssh user@158.160.125.19 -i id_rsa
-$ sudo -i
-# apt update && apt install gnupg apt-transport-https
-# wget -qO - https://artifacts.elastic.co/GPG-KEY-elasticsearch | sudo apt-key add -
-# echo "deb [trusted=yes] https://mirror.yandex.ru/mirrors/elastic/7/ stable main" | sudo tee /etc/apt/sources.list.d/elastic-7.x.list
-# apt update && apt-get install elasticsearch
-# systemctl daemon-reload
-# systemctl enable elasticsearch.service
-# systemctl start elasticsearch.service
-# systemctl status elasticsearch.service
-# curl 'localhost:9200/_cluster/health?pretty'
+ssh user@158.160.125.19 -i id_rsa
+sudo -i
+apt update && apt install gnupg apt-transport-https
+wget -qO - https://artifacts.elastic.co/GPG-KEY-elasticsearch | sudo apt-key add -
+echo "deb [trusted=yes] https://mirror.yandex.ru/mirrors/elastic/7/ stable main" | sudo tee /etc/apt/sources.list.d/elastic-7.x.list
+apt update && apt-get install elasticsearch
+systemctl daemon-reload
+systemctl enable elasticsearch.service
+systemctl start elasticsearch.service
+systemctl status elasticsearch.service
 ```
-настройка эластикаНаписать хо
+
+![Скриншот-14](https://github.com/Monooks/SYS-DIPLOMA-Neto/blob/main/img/dip_14.png)
+
+```bash
+curl 'localhost:9200/_cluster/health?pretty'
+```
+
+![Скриншот-15](https://github.com/Monooks/SYS-DIPLOMA-Neto/blob/main/img/dip_15.png)
+
+Правим elasticsearch.yml:
+
 ```bash
 # nano /etc/elasticsearch/elasticsearch.yml
 ```
 
-cluster.name: diplomaneto
-node.name: node-1
-path.data: /var/lib/elasticsearch
-path.logs: /var/log/elasticsearch
-network.host: 0.0.0.0
-discovery.seed_hosts: ["127.0.0.1", "[::1]"]
+[elasticsearch.yml](https://github.com/Monooks/SYS-DIPLOMA-Neto/blob/main/img/elasticsearch.yml)
+
 ```bash
-# systemctl restart elasticsearpaths:
-    - /var/log/*.log
-ch.service
+# systemctl restart elasticsearch.service
 # systemctl status elasticsearch.service
 ```
+
+![Скриншот-16](https://github.com/Monooks/SYS-DIPLOMA-Neto/blob/main/img/dip_16.png)
+
+```bash
+curl 'localhost:9200/_cluster/health?pretty'
+```
+
+![Скриншот-17](https://github.com/Monooks/SYS-DIPLOMA-Neto/blob/main/img/dip_17.png)
+
+
+
+paths:
+    - /var/log/*.log
+
+
+
+
 
 установка Kibana:
 ```bash
