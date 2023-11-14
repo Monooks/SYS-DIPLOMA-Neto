@@ -488,50 +488,67 @@ $ sudo -i
 # systemctl status filebeat.service
 ```
 
+![Скриншот-21](https://github.com/Monooks/SYS-DIPLOMA-Neto/blob/main/img/dip_21.png)
+
+![Скриншот-22](https://github.com/Monooks/SYS-DIPLOMA-Neto/blob/main/img/dip_22.png)
+
 Правим конфиг filebeat.yml:
 
 ```bash
 # nano /etc/filebeat/filebeat.yml
 ```
-  enabled: true
-  paths:
-    - /var/log/nginx/*.log
-    
-    
-setup.kibana:
-  host: "84.201.158.212:5601"
 
-output.elasticsearch:
-  hosts: ["84.201.134.46:9200"]
-  
+[filebeat.yml](https://github.com/Monooks/SYS-DIPLOMA-Neto/blob/main/img/filebeat.yml)
+
 ```bash
 # systemctl restart filebeat.service
 # systemctl status filebeat.service
 ```
 
+![Скриншот-23](https://github.com/Monooks/SYS-DIPLOMA-Neto/blob/main/img/dip_23.png)
+
+![Скриншот-24](https://github.com/Monooks/SYS-DIPLOMA-Neto/blob/main/img/dip_24.png)
+
+В браузере вводим:
+
+[http://158.160.45.56:5601/app/discover](http://158.160.45.56:5601/app/discover)
+
+![Скриншот-25](https://github.com/Monooks/SYS-DIPLOMA-Neto/blob/main/img/dip_25.png)
+
+---
+
+## 4. Устройство Сети.
+
+### Сеть
+
+*Разверните один VPC. Сервера web, Elasticsearch поместите в приватные подсети. Сервера Zabbix, Kibana, application load balancer определите в публичную подсеть.*
+
+*Настройте [Security Groups](https://cloud.yandex.com/docs/vpc/concepts/security-groups) соответствующих сервисов на входящий трафик только к нужным портам.*
+
+*Настройте ВМ с публичным адресом, в которой будет открыт только один порт — ssh. Настройте все security groups на разрешение входящего ssh из этой security group. Эта вм будет реализовывать концепцию bastion host. Потом можно будет подключаться по ssh ко всем хостам через этот хост.*
+
+#### Настраиваем в Yandex.Cloud правила групп безопасности
 
 
-
-Создаем группы безопасности
-
+# Тут у меня пробел. Группы я создал в терраформе. Группы по хостам раскидал в терраформе. А правила пока не родились в голове.
 
 
+---
 
+## 5. Устройство резервного копирования.
 
+### Резервное копирование
 
+*Создайте snapshot дисков всех ВМ. Ограничьте время жизни snaphot в неделю. Сами snaphot настройте на ежедневное копирование.*
 
+#### Настраиваем в Yandex.Cloud правила резервного копирования
 
+Создаем расписание:
 
+![Скриншот-26](https://github.com/Monooks/SYS-DIPLOMA-Neto/blob/main/img/dip_26.png)
 
+Присваиваем его всем дискам:
 
+![Скриншот-27](https://github.com/Monooks/SYS-DIPLOMA-Neto/blob/main/img/dip_27.png)
 
-
-
-
-
-
-
-
-
-
-
+end.
