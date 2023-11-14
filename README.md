@@ -322,6 +322,8 @@ nano /etc/nginx/nginx.conf
 
 ![Скриншот-7](https://github.com/Monooks/SYS-DIPLOMA-Neto/blob/main/img/dip_7.png)
 
+![Скриншот-8](https://github.com/Monooks/SYS-DIPLOMA-Neto/blob/main/img/dip_8.png)
+
 ```bash
 # systemctl daemon-reload
 # chown -R prometheus:prometheus /var/log/nginx/access.log
@@ -329,11 +331,15 @@ nano /etc/nginx/nginx.conf
 # systemctl status prometheus-nginxlog-exporter
 ```
 
-![Скриншот-8](https://github.com/Monooks/SYS-DIPLOMA-Neto/blob/main/img/dip_8.png)
+![Скриншот-9](https://github.com/Monooks/SYS-DIPLOMA-Neto/blob/main/img/dip_9.png)
+
+![Скриншот-10](https://github.com/Monooks/SYS-DIPLOMA-Neto/blob/main/img/dip_10.png)
 
 [Targets prometheus](http://158.160.38.127:9090/targets?search=)
 
-![Скриншот-9](https://github.com/Monooks/SYS-DIPLOMA-Neto/blob/main/img/dip_9.png)
+![Скриншот-11](https://github.com/Monooks/SYS-DIPLOMA-Neto/blob/main/img/dip_11.png)
+
+
 
 #### Cтавим grafana на ВМ graf_4
 ```bash
