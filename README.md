@@ -158,7 +158,7 @@ curl -v 158.160.132.187:80
 
 Создайте ВМ, установите туда Grafana. Настройте её на взаимодействие с ранее развернутым Prometheus. Настройте дешборды с отображением метрик, минимальный набор — Utilization, Saturation, Errors для CPU, RAM, диски, сеть, http_response_count_total, http_response_size_bytes. Добавьте необходимые tresholds на соответствующие графики.
 
-Cтавим Prometheus
+Cтавим Prometheus.
 Вводим команды:
 
 ```bash
@@ -179,24 +179,8 @@ chown prometheus:prometheus /usr/local/bin/prometheus
 chown prometheus:prometheus /usr/local/bin/promtool
 nano /etc/systemd/system/prometheus.service
 ```
-
 [prometheus.service](https://github.com/Monooks/SYS-DIPLOMA-Neto/blob/main/img/prometheus.service)
 
-[Unit]
-Description=Prometheus Service Netology Diploma
-After=network.target
-[Service]
-User=prometheus
-Group=prometheus
-Type=simple
-ExecStart=/usr/local/bin/prometheus \
---config.file /etc/prometheus/prometheus.yml \
---storage.tsdb.path /var/lib/prometheus/ \
---web.console.templates=/etc/prometheus/consoles \
---web.console.libraries=/etc/prometheus/console_libraries
-ExecReload=/bin/kill -HUP $MAINPID Restart=on-failure
-[Install]
-WantedBy=multi-user.target
 ```
 # chown -R prometheus:prometheus /var/lib/prometheus
 # systemctl enable prometheus
