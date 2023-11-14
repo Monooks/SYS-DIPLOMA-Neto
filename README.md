@@ -215,6 +215,7 @@ chown prometheus:prometheus /usr/local/bin/prometheus
 chown prometheus:prometheus /usr/local/bin/promtool
 nano /etc/systemd/system/prometheus.service
 ```
+
 [prometheus.service](https://github.com/Monooks/SYS-DIPLOMA-Neto/blob/main/img/prometheus.service)
 
 ```
@@ -223,7 +224,28 @@ systemctl enable prometheus
 sudo systemctl start prometheus
 sudo systemctl status prometheus
 ```
+
 ![Скриншот-1](https://github.com/Monooks/SYS-DIPLOMA-Neto/blob/main/img/dip_1.png)
+
+#### Правим конфиг prometheus
+
+Вводим команды:
+
+```bash
+nano /etc/prometheus/prometheus.yml
+```
+
+[prometheus.yml](https://github.com/Monooks/SYS-DIPLOMA-Neto/blob/main/img/prometheus.yml)
+
+```bash
+systemctl restart prometheus
+systemctl status prometheus
+```
+
+![Скриншот-2](https://github.com/Monooks/SYS-DIPLOMA-Neto/blob/main/img/dip_2.png)
+
+[Таргетсы прометьюса](http://158.160.38.127:9090/targets?search=)
+
 
 ноде экспортер
 ```bash
