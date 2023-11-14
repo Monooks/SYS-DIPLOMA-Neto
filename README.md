@@ -181,7 +181,9 @@ ansible-playbook -b /home/imonooks/Загрузки/Task4/playbook4.yam
 ```
 curl -v 158.160.132.187:80
 ```
-[external_ip_address_l7 = "158.160.130.195"](http://158.160.130.195)
+
+[external_ip_address_l7 = "158.160.130.195"](http://158.160.130.195) - адрес L7 балансировщика.
+
 ---
 
 ## 2. Устройство мониторинга посредством Prometheus и Grafana.
