@@ -269,7 +269,7 @@ mkdir /etc/prometheus/node-exporter
 cp ./* /etc/prometheus/node-exporter
 chown -R prometheus:prometheus /etc/prometheus/node-exporter/
 nano /etc/systemd/system/node-exporter.service
-```
+```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
 
 [node-exporter.service](https://github.com/Monooks/SYS-DIPLOMA-Neto/blob/main/img/node-exporter.service)
 
@@ -405,14 +405,14 @@ curl 'localhost:9200/_cluster/health?pretty'
 Правим elasticsearch.yml:
 
 ```bash
-# nano /etc/elasticsearch/elasticsearch.yml
+nano /etc/elasticsearch/elasticsearch.yml
 ```
 
 [elasticsearch.yml](https://github.com/Monooks/SYS-DIPLOMA-Neto/blob/main/img/elasticsearch.yml)
 
 ```bash
-# systemctl restart elasticsearch.service
-# systemctl status elasticsearch.service
+systemctl restart elasticsearch.service
+systemctl status elasticsearch.service
 ```
 
 ![Скриншот-16](https://github.com/Monooks/SYS-DIPLOMA-Neto/blob/main/img/dip_16.png)
@@ -423,16 +423,10 @@ curl 'localhost:9200/_cluster/health?pretty'
 
 ![Скриншот-17](https://github.com/Monooks/SYS-DIPLOMA-Neto/blob/main/img/dip_17.png)
 
+#### Cтавим kibana на ВМ kib_6:
 
+Вводим команды:
 
-paths:
-    - /var/log/*.log
-
-
-
-
-
-установка Kibana:
 ```bash
 # ssh user@158.160.125.19 -i id_rsa
 $ sudo -i
