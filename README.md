@@ -124,19 +124,33 @@ Cоздайте ВМ, разверните на ней Elasticsearch. Устан
 Outputs:
 
 [external_ip_address_bast_7 = "158.160.56.142"](http://158.160.56.142)
+
 [external_ip_address_elas_5 = "130.193.48.161"](http://130.193.48.161)
+
 [external_ip_address_graf_4 = "51.250.70.123"](http://51.250.70.123)
+
 [external_ip_address_kib_6 = "158.160.45.56"](http://158.160.45.56)
+
 [external_ip_address_l7 = "158.160.130.195"](http://158.160.130.195)
+
 [external_ip_address_prom_3 = "158.160.38.127"](http://158.160.38.127)
+
 [external_ip_address_web_1 = "84.201.132.138"](http://84.201.132.138)
+
 [external_ip_address_web_2 = "84.201.140.19"](http://84.201.140.19)
+
 [internal_ip_address_bast_7 = "192.168.10.9"](http://192.168.10.9)
+
 [internal_ip_address_elas_5 = "192.168.10.4"](http://192.168.10.4)
+
 [internal_ip_address_graf_4 = "192.168.10.32"](http://192.168.10.32)
+
 [internal_ip_address_kib_6 = "192.168.10.23"](http://192.168.10.23)
+
 [internal_ip_address_prom_3 = "192.168.10.31"](http://192.168.10.31)
+
 [internal_ip_address_web_1 = "192.168.10.16"](http://192.168.10.16)
+
 [internal_ip_address_web_2 = "192.168.20.34"](http://192.168.20.34)
 
 Теперь надо установить Ansible на терминал.
