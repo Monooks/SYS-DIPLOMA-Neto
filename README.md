@@ -230,9 +230,7 @@ sudo systemctl status prometheus
 
 ![Скриншот-1](https://github.com/Monooks/SYS-DIPLOMA-Neto/blob/main/img/dip_1.png)
 
-#### Правим конфиг prometheus
-
-Вводим команды:
+Правим конфиг prometheus.yml:
 
 ```bash
 nano /etc/prometheus/prometheus.yml
@@ -248,6 +246,8 @@ systemctl status prometheus
 ```
 
 ![Скриншот-2](https://github.com/Monooks/SYS-DIPLOMA-Neto/blob/main/img/dip_2.png)
+
+Переходим в интерфейс prometheus в браузере:
 
 [Targets prometheus](http://158.160.38.127:9090/targets?search=)
 
@@ -298,7 +298,7 @@ nano /etc/systemd/system/prometheus-nginxlog-exporter.service
 
 [prometheus-nginxlog-exporter.service](https://github.com/Monooks/SYS-DIPLOMA-Neto/blob/main/img/prometheus-nginxlog-exporter.service)
 
-Правим nginx.conf:
+Правим конфиг nginx.conf:
 
 ```bash
 nano /etc/nginx/nginx.conf
@@ -306,7 +306,7 @@ nano /etc/nginx/nginx.conf
 
 [nginx.conf](https://github.com/Monooks/SYS-DIPLOMA-Neto/blob/main/img/nginx.conf)
 
-Правим myapp.conf:
+Правим конфиг myapp.conf:
 
 ```bash
 rm -rf /etc/nginx/sites-enabled/default
@@ -335,6 +335,8 @@ systemctl status prometheus-nginxlog-exporter
 
 ![Скриншот-10](https://github.com/Monooks/SYS-DIPLOMA-Neto/blob/main/img/dip_10.png)
 
+Переходим в интерфейс prometheus в браузере:
+
 [Targets prometheus](http://158.160.38.127:9090/targets?search=)
 
 ![Скриншот-11](https://github.com/Monooks/SYS-DIPLOMA-Neto/blob/main/img/dip_11.png)
@@ -357,6 +359,8 @@ systemctl status grafana-server
 
 ![Скриншот-12](https://github.com/Monooks/SYS-DIPLOMA-Neto/blob/main/img/dip_12.png)
 
+Переходим в интерфейс grafana в браузере:
+
 [Интерфейс grafana = "51.250.70.123:3000"](http://51.250.70.123:3000/d/rYdddlPWk/node-exporter-full?orgId=1&from=now-3h&to=now&refresh=5s&var-DS_PROMETHEUS=a48da813-fe39-401e-be9d-b1782807f8e5&var-job=prometheus&var-node=192.168.10.16:9100&var-diskdevices=%5Ba-z%5D%2B%7Cnvme%5B0-9%5D%2Bn%5B0-9%5D%2B%7Cmmcblk%5B0-9%5D%2B)
 
 логин: admin
@@ -377,7 +381,7 @@ systemctl status grafana-server
 
 *Создайте ВМ, разверните на ней Kibana, сконфигурируйте соединение с Elasticsearch.*
 
-#### Cтавим Elasticsearch на ВМ elas_5:
+#### Cтавим Elasticsearch на ВМ elas_5
 
 Вводим команды:
 
@@ -402,7 +406,7 @@ curl 'localhost:9200/_cluster/health?pretty'
 
 ![Скриншот-15](https://github.com/Monooks/SYS-DIPLOMA-Neto/blob/main/img/dip_15.png)
 
-Правим elasticsearch.yml:
+Правим конфиг elasticsearch.yml:
 
 ```bash
 nano /etc/elasticsearch/elasticsearch.yml
@@ -423,7 +427,7 @@ curl 'localhost:9200/_cluster/health?pretty'
 
 ![Скриншот-17](https://github.com/Monooks/SYS-DIPLOMA-Neto/blob/main/img/dip_17.png)
 
-#### Cтавим kibana на ВМ kib_6:
+#### Cтавим kibana на ВМ kib_6
 
 Вводим команды:
 
@@ -442,7 +446,7 @@ systemctl status kibana.service
 
 ![Скриншот-18](https://github.com/Monooks/SYS-DIPLOMA-Neto/blob/main/img/dip_18.png)
 
-Правим kibana.yml:
+Правим конфиг kibana.yml:
 
 ```bash
 nano /etc/kibana/kibana.yml
@@ -457,18 +461,20 @@ systemctl status kibana.service
 
 ![Скриншот-19](https://github.com/Monooks/SYS-DIPLOMA-Neto/blob/main/img/dip_19.png)
 
-в браузере вводим:
+В браузере вводим:
 
 [http://158.160.45.56:5601/app/dev_tools#/console](http://158.160.45.56:5601/app/dev_tools#/console)
 
-делаем запрос к Эластику:
+Делаем запрос к Эластику:
 
 GET /_cluster/health?pretty
 
 ![Скриншот-20](https://github.com/Monooks/SYS-DIPLOMA-Neto/blob/main/img/dip_20.png)
 
+#### Cтавим filebeat на оба web-сервера web_1 и web_2
 
-Ставим файлбитсы на сервера c nginx:
+Вводим команды:
+
 ```bash
 # ssh user@158.160.125.19 -i id_rsa
 $ sudo -i
@@ -481,7 +487,9 @@ $ sudo -i
 # systemctl start filebeat.service
 # systemctl status filebeat.service
 ```
-Правим конфиг Фаилбитс:
+
+Правим конфиг filebeat.yml:
+
 ```bash
 # nano /etc/filebeat/filebeat.yml
 ```
@@ -500,6 +508,10 @@ output.elasticsearch:
 # systemctl restart filebeat.service
 # systemctl status filebeat.service
 ```
+
+
+
+
 Создаем группы безопасности
 
 
