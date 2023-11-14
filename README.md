@@ -42,9 +42,9 @@
 `curl -v <публичный IP балансера>:80` 
 
 ### Мониторинг
-Создайте ВМ, разверните на ней Zabbix. На каждую ВМ установите Zabbix Agent, настройте агенты на отправление метрик в Zabbix. 
+Создайте ВМ, разверните на ней Prometheus. На каждую ВМ из веб-серверов установите Node Exporter и Nginx Log Exporter. Настройте Prometheus на сбор метрик с этих exporter.
 
-Настройте дешборды с отображением метрик, минимальный набор — по принципу USE (Utilization, Saturation, Errors) для CPU, RAM, диски, сеть, http запросов к веб-серверам. Добавьте необходимые tresholds на соответствующие графики.
+Создайте ВМ, установите туда Grafana. Настройте её на взаимодействие с ранее развернутым Prometheus. Настройте дешборды с отображением метрик, минимальный набор — Utilization, Saturation, Errors для CPU, RAM, диски, сеть, http_response_count_total, http_response_size_bytes. Добавьте необходимые tresholds на соответствующие графики.
 
 ### Логи
 Cоздайте ВМ, разверните на ней Elasticsearch. Установите filebeat в ВМ к веб-серверам, настройте на отправку access.log, error.log nginx в Elasticsearch.
@@ -100,7 +100,7 @@ Cоздайте ВМ, разверните на ней Elasticsearch. Устан
 
 1. Создание виртуальных машин для устройства веб-серверов nginx.
 
-#### Создайте две ВМ в разных зонах, установите на них сервер nginx, если его там нет. ОС и содержимое ВМ должно быть идентичным, это будут наши веб-сервера.
+Создайте две ВМ в разных зонах, установите на них сервер nginx, если его там нет. ОС и содержимое ВМ должно быть идентичным, это будут наши веб-сервера.
 
 Для выполнения данной работы я использую терминал с установленной на него системой Ubuntu 22.04.
 С данного терминала я выхожу в сеть интернет для доступа к Yandex.Cloud.
@@ -145,34 +145,42 @@ ansible-playbook -b /home/imonooks/Загрузки/Task4/playbook4.yam
 ```
 
 Тестируем сайт:
+
 ```
 curl -v 158.160.132.187:80
 ```
-
-![Скриншот-1](https://github.com/Monooks/SYS-DIPLOMA-Neto/blob/main/img/dip_1.png)
-![Скриншот-2](https://github.com/Monooks/SYS-DIPLOMA-Neto/blob/main/img/dip_2.png)
-![Скриншот-2](https://github.com/Monooks/SYS-DIPLOMA-Neto/blob/main/img/dip_3.png)
-![Скриншот-2](https://github.com/Monooks/SYS-DIPLOMA-Neto/blob/main/img/dip_4.png)
 ---
-ставим prometheus:
+
+2. Устройство мониторинга посредством Prometheus и Grafana.
+
+### Мониторинг
+Создайте ВМ, разверните на ней Prometheus. На каждую ВМ из веб-серверов установите Node Exporter и Nginx Log Exporter. Настройте Prometheus на сбор метрик с этих exporter.
+
+Создайте ВМ, установите туда Grafana. Настройте её на взаимодействие с ранее развернутым Prometheus. Настройте дешборды с отображением метрик, минимальный набор — Utilization, Saturation, Errors для CPU, RAM, диски, сеть, http_response_count_total, http_response_size_bytes. Добавьте необходимые tresholds на соответствующие графики.
+
+ставим Prometheus:
+
 ```bash
-# ssh user@158.160.125.19 -i id_rsa
-$ sudo -i
-# useradd --no-create-home --shell /bin/false prometheus
-# wget https://github.com/prometheus/prometheus/releases/download/v2.47.1/prometheus-2.47.1.linux-amd64.tar.gz
-# tar xvfz prometheus-2.47.1.linux-amd64.tar.gz
-# cd prometheus-2.47.1.linux-amd64/
-# mkdir /etc/prometheus
-# mkdir /var/lib/prometheus
-# cp ./prometheus promtool /usr/local/bin/
-# cp -R ./console_libraries /etc/prometheus
-# cp -R ./consoles /etc/prometheus
-# cp ./prometheus.yml /etc/prometheus
-# chown -R prometheus:prometheus /etc/prometheus /var/lib/prometheus
-# chown prometheus:prometheus /usr/local/bin/prometheus
-# chown prometheus:prometheus /usr/local/bin/promtool
-# nano /etc/systemd/system/prometheus.service
+ssh user@158.160.125.19 -i id_rsa
+sudo -i
+useradd --no-create-home --shell /bin/false prometheus
+wget https://github.com/prometheus/prometheus/releases/download/v2.47.1/prometheus-2.47.1.linux-amd64.tar.gz
+tar xvfz prometheus-2.47.1.linux-amd64.tar.gz
+cd prometheus-2.47.1.linux-amd64/
+mkdir /etc/prometheus
+mkdir /var/lib/prometheus
+cp ./prometheus promtool /usr/local/bin/
+cp -R ./console_libraries /etc/prometheus
+cp -R ./consoles /etc/prometheus
+cp ./prometheus.yml /etc/prometheus
+chown -R prometheus:prometheus /etc/prometheus /var/lib/prometheus
+chown prometheus:prometheus /usr/local/bin/prometheus
+chown prometheus:prometheus /usr/local/bin/promtool
+nano /etc/systemd/system/prometheus.service
 ```
+
+[prometheus.service](https://github.com/Monooks/SYS-DIPLOMA-Neto/blob/main/img/prometheus.service)
+
 [Unit]
 Description=Prometheus Service Netology Diploma
 After=network.target
