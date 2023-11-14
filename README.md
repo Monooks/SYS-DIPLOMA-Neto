@@ -428,31 +428,45 @@ curl 'localhost:9200/_cluster/health?pretty'
 Вводим команды:
 
 ```bash
-# ssh user@158.160.125.19 -i id_rsa
-$ sudo -i
-# apt update && apt install gnupg apt-transport-https
-# wget -qO - https://artifacts.elastic.co/GPG-KEY-elasticsearch | sudo apt-key add -
-# echo "deb [trusted=yes] https://mirror.yandex.ru/mirrors/elastic/7/ stable main" | sudo tee /etc/apt/sources.list.d/elastic-7.x.list
-# apt update && apt-get install kibana
-# systemctl daemon-reload
-# systemctl enable kibana.service
-# systemctl start kibana.service
-# systemctl status kibana.service
+ssh user@158.160.125.19 -i id_rsa
+sudo -i
+apt update && apt install gnupg apt-transport-https
+wget -qO - https://artifacts.elastic.co/GPG-KEY-elasticsearch | sudo apt-key add -
+echo "deb [trusted=yes] https://mirror.yandex.ru/mirrors/elastic/7/ stable main" | sudo tee /etc/apt/sources.list.d/elastic-7.x.list
+apt update && apt-get install kibana
+systemctl daemon-reload
+systemctl enable kibana.service
+systemctl start kibana.service
+systemctl status kibana.service
 ```
-правим Кибану:
+
+![Скриншот-18](https://github.com/Monooks/SYS-DIPLOMA-Neto/blob/main/img/dip_18.png)
+
+Правим kibana.yml:
+
 ```bash
-# nano /etc/kibana/kibana.yml
+nano /etc/kibana/kibana.yml
 ```
-server.host: "0.0.0.0"
-elasticsearch.hosts: ["http://84.201.134.46:9200"]
+
+[kibana.yml](https://github.com/Monooks/SYS-DIPLOMA-Neto/blob/main/img/kibana.yml)
+
+```bash
+systemctl restart kibana.service
+systemctl status kibana.service
+```
+
+![Скриншот-19](https://github.com/Monooks/SYS-DIPLOMA-Neto/blob/main/img/dip_19.png)
 
 в браузере вводим:
 
-http://84.201.158.212:5601/app/dev_tools#/console
+[http://158.160.45.56:5601/app/dev_tools#/console](http://158.160.45.56:5601/app/dev_tools#/console)
 
 делаем запрос к Эластику:
 
 GET /_cluster/health?pretty
+
+![Скриншот-20](https://github.com/Monooks/SYS-DIPLOMA-Neto/blob/main/img/dip_20.png)
+
 
 Ставим файлбитсы на сервера c nginx:
 ```bash
