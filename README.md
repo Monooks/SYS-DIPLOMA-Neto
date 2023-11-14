@@ -309,15 +309,15 @@ nano /etc/nginx/nginx.conf
 Правим myapp.conf:
 
 ```bash
-# rm -rf /etc/nginx/sites-enabled/default
-# nano /etc/nginx/conf.d/myapp.conf
+rm -rf /etc/nginx/sites-enabled/default
+nano /etc/nginx/conf.d/myapp.conf
 ```
 
 [myapp.conf](https://github.com/Monooks/SYS-DIPLOMA-Neto/blob/main/img/myapp.conf)
 
 ```bash
-# systemctl restart nginx
-# systemctl status nginx
+systemctl restart nginx
+systemctl status nginx
 ```
 
 ![Скриншот-7](https://github.com/Monooks/SYS-DIPLOMA-Neto/blob/main/img/dip_7.png)
@@ -325,10 +325,10 @@ nano /etc/nginx/nginx.conf
 ![Скриншот-8](https://github.com/Monooks/SYS-DIPLOMA-Neto/blob/main/img/dip_8.png)
 
 ```bash
-# systemctl daemon-reload
-# chown -R prometheus:prometheus /var/log/nginx/access.log
-# systemctl restart prometheus-nginxlog-exporter
-# systemctl status prometheus-nginxlog-exporter
+systemctl daemon-reload
+chown -R prometheus:prometheus /var/log/nginx/access.log
+systemctl restart prometheus-nginxlog-exporter
+systemctl status prometheus-nginxlog-exporter
 ```
 
 ![Скриншот-9](https://github.com/Monooks/SYS-DIPLOMA-Neto/blob/main/img/dip_9.png)
@@ -345,14 +345,14 @@ nano /etc/nginx/nginx.conf
 Вводим команды:
 
 ```bash
-# ssh user@158.160.125.19 -i id_rsa
-$ sudo -i
-# apt-get install -y adduser libfontconfig1 musl
-# wget https://dl.grafana.com/oss/release/grafana_10.1.5_amd64.deb
-# dpkg -i grafana_10.1.5_amd64.deb
-# systemctl enable grafana-server
-# systemctl start grafana-server
-# systemctl status grafana-server
+ssh user@158.160.125.19 -i id_rsa
+sudo -i
+apt-get install -y adduser libfontconfig1 musl
+wget https://dl.grafana.com/oss/release/grafana_10.1.5_amd64.deb
+dpkg -i grafana_10.1.5_amd64.deb
+systemctl enable grafana-server
+systemctl start grafana-server
+systemctl status grafana-server
 ```
 
 ![Скриншот-12](https://github.com/Monooks/SYS-DIPLOMA-Neto/blob/main/img/dip_12.png)
