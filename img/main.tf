@@ -28,8 +28,9 @@ resource "yandex_compute_instance" "web-1" {
   }
 
   network_interface {
-    subnet_id = "${yandex_vpc_subnet.subnet-1.id}"
-    nat       = true
+    subnet_id          = "${yandex_vpc_subnet.subnet-1.id}"
+    nat                = true
+    security_group_ids = ["${yandex_vpc_security_group.private-sg.id}"]
   }
 
   metadata = {
@@ -75,6 +76,7 @@ resource "yandex_compute_instance" "web-2" {
   network_interface {
     subnet_id = "${yandex_vpc_subnet.subnet-2.id}"
     nat       = true
+    security_group_ids = ["${yandex_vpc_security_group.private-sg.id}"]
   }
 
   metadata = {
@@ -116,6 +118,7 @@ resource "yandex_compute_instance" "elas-5" {
   network_interface {
     subnet_id = "${yandex_vpc_subnet.subnet-1.id}"
     nat       = true
+    security_group_ids = ["${yandex_vpc_security_group.private-sg.id}"]
   }
 
   metadata = {
@@ -150,6 +153,7 @@ resource "yandex_compute_instance" "kib-6" {
   network_interface {
     subnet_id = "${yandex_vpc_subnet.subnet-1.id}"
     nat       = true
+    security_group_ids = ["${yandex_vpc_security_group.open-sg.id}"]
   }
 
   metadata = {
@@ -211,6 +215,14 @@ output "internal_ip_address_kib_6" {
 
 output "external_ip_address_kib_6" {
   value = yandex_compute_instance.kib-6.network_interface.0.nat_ip_address
+}
+
+output "internal_ip_address_bast_7" {
+  value = yandex_compute_instance.bast-7.network_interface.0.ip_address
+}
+
+output "external_ip_address_bast_7" {
+  value = yandex_compute_instance.bast-7.network_interface.0.nat_ip_address
 }
 
 resource "yandex_alb_target_group" "foo" {
@@ -278,9 +290,9 @@ resource "yandex_alb_virtual_host" "my-virtual-host" {
 }    
 
 resource "yandex_alb_load_balancer" "test-balancer" {
-  name        = "jimmy7"
-  network_id  = "${yandex_vpc_network.network-1.id}"
-#  security_group_ids = ["${yandex_vpc_security_group.default.id}"]
+  name               = "jimmy7"
+  network_id         = "${yandex_vpc_network.network-1.id}"
+  security_group_ids = ["${yandex_vpc_security_group.open-sg.id}"]
 
  allocation_policy {
     location {
@@ -346,6 +358,7 @@ resource "yandex_compute_instance" "prom-3" {
   network_interface {
     subnet_id = "${yandex_vpc_subnet.subnet-1.id}"
     nat       = true
+    security_group_ids = ["${yandex_vpc_security_group.private-sg.id}"]
   }
 
   metadata = {
@@ -380,6 +393,7 @@ resource "yandex_compute_instance" "graf-4" {
   network_interface {
     subnet_id = "${yandex_vpc_subnet.subnet-1.id}"
     nat       = true
+    security_group_ids = ["${yandex_vpc_security_group.open-sg.id}"]
   }
 
   metadata = {
@@ -389,4 +403,93 @@ resource "yandex_compute_instance" "graf-4" {
   scheduling_policy {
     preemptible = true
   }      
+}
+
+resource "yandex_vpc_security_group" "private-sg" {
+  name        = "Private security group"
+  description = "Web, Prometheus, Elasticsearch"
+  network_id  = "${yandex_vpc_network.network-1.id}"
+
+  ingress {
+    protocol       = "ANY"
+    description    = "Rule description 1"
+    v4_cidr_blocks = ["0.0.0.0/0"]
+  }
+
+  egress {
+    protocol       = "ANY"
+    description    = "Rule description 2"
+    v4_cidr_blocks = ["0.0.0.0/0"]
+  }
+}
+
+resource "yandex_vpc_security_group" "open-sg" {
+  name        = "Open security group"
+  description = "Grafana, Kibana, application load balancer"
+  network_id  = "${yandex_vpc_network.network-1.id}"
+
+  ingress {
+    protocol       = "ANY"
+    description    = "Rule description 1"
+    v4_cidr_blocks = ["0.0.0.0/0"]
+  }
+
+  egress {
+    protocol       = "ANY"
+    description    = "Rule description 2"
+    v4_cidr_blocks = ["0.0.0.0/0"]
+  }
+}
+
+resource "yandex_vpc_security_group" "ssh-sg" {
+  name        = "SSH security group"
+  description = "Bastion-host"
+  network_id  = "${yandex_vpc_network.network-1.id}"
+
+  ingress {
+    protocol       = "ANY"
+    description    = "Rule description 1"
+    v4_cidr_blocks = ["0.0.0.0/0"]
+  }
+
+  egress {
+    protocol       = "ANY"
+    description    = "Rule description 2"
+    v4_cidr_blocks = ["0.0.0.0/0"]
+  }
+}
+
+resource "yandex_compute_instance" "bast-7" {
+
+  name                      = "linux-bast7"
+  allow_stopping_for_update = true
+  platform_id               = "standard-v2"
+  zone                      = "ru-central1-a"
+
+  resources {
+    cores         = 2
+    memory        = 1
+    core_fraction = 5
+  }
+
+  boot_disk {
+    initialize_params {
+      image_id = "fd8ecgtorub9r4609man"
+      size     = 8
+    }
+  }
+
+  network_interface {
+    subnet_id = "${yandex_vpc_subnet.subnet-1.id}"
+    nat       = true
+    security_group_ids = ["${yandex_vpc_security_group.ssh-sg.id}"]
+  }
+
+  metadata = {
+    user-data = "${file("./meta.yaml")}"
+  }
+
+  scheduling_policy {
+    preemptible = true
+  }
 }
