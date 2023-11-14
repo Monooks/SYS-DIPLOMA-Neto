@@ -357,7 +357,7 @@ systemctl status grafana-server
 
 ![Скриншот-12](https://github.com/Monooks/SYS-DIPLOMA-Neto/blob/main/img/dip_12.png)
 
-[Интерфейс grafana = "51.250.70.123:3000"](http://51.250.70.123:3000)
+[Интерфейс grafana = "51.250.70.123:3000"](http://51.250.70.123:3000/d/rYdddlPWk/node-exporter-full?orgId=1&from=now-3h&to=now&refresh=5s&var-DS_PROMETHEUS=a48da813-fe39-401e-be9d-b1782807f8e5&var-job=prometheus&var-node=192.168.10.16:9100&var-diskdevices=%5Ba-z%5D%2B%7Cnvme%5B0-9%5D%2Bn%5B0-9%5D%2B%7Cmmcblk%5B0-9%5D%2B)
 
 логин: admin
 
