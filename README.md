@@ -340,8 +340,10 @@ nano /etc/nginx/nginx.conf
 ![Скриншот-11](https://github.com/Monooks/SYS-DIPLOMA-Neto/blob/main/img/dip_11.png)
 
 
-
 #### Cтавим grafana на ВМ graf_4
+
+Вводим команды:
+
 ```bash
 # ssh user@158.160.125.19 -i id_rsa
 $ sudo -i
@@ -353,7 +355,17 @@ $ sudo -i
 # systemctl status grafana-server
 ```
 
-fd8nhb6fd0hpl40gm797 - ключ от дебиана
+![Скриншот-12](https://github.com/Monooks/SYS-DIPLOMA-Neto/blob/main/img/dip_12.png)
+
+[Интерфейс grafana = "192.168.10.32:3000"](http://192.168.10.32:3000)
+
+логин: admin
+
+пароль: admin
+
+---
+
+
 
 ставим Elasticsearch:
 ```bash
