@@ -363,6 +363,8 @@ systemctl status grafana-server
 
 пароль: admin
 
+![Скриншот-13](https://github.com/Monooks/SYS-DIPLOMA-Neto/blob/main/img/dip_13.png)
+
 ---
 
 
