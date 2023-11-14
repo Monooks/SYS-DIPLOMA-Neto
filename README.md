@@ -182,18 +182,21 @@ ansible-playbook -b /home/imonooks/Загрузки/Task4/playbook4.yam
 curl -v 158.160.132.187:80
 ```
 
-[external_ip_address_l7 = "158.160.130.195"](http://158.160.130.195) - внешний адрес L7 балансировщика.
+[внешний IP адрес L7 балансировщика](http://158.160.130.195)
+
+![Скриншот-4](https://github.com/Monooks/SYS-DIPLOMA-Neto/blob/main/img/dip_4.png)
 
 ---
 
 ## 2. Устройство мониторинга посредством Prometheus и Grafana.
 
 ### Мониторинг
+
 Создайте ВМ, разверните на ней Prometheus. На каждую ВМ из веб-серверов установите Node Exporter и Nginx Log Exporter. Настройте Prometheus на сбор метрик с этих exporter.
 
 Создайте ВМ, установите туда Grafana. Настройте её на взаимодействие с ранее развернутым Prometheus. Настройте дешборды с отображением метрик, минимальный набор — Utilization, Saturation, Errors для CPU, RAM, диски, сеть, http_response_count_total, http_response_size_bytes. Добавьте необходимые tresholds на соответствующие графики.
 
-#### Cтавим Prometheus
+#### Cтавим prometheus
 
 Вводим команды:
 
@@ -244,10 +247,14 @@ systemctl status prometheus
 
 ![Скриншот-2](https://github.com/Monooks/SYS-DIPLOMA-Neto/blob/main/img/dip_2.png)
 
-[Таргетсы прометьюса](http://158.160.38.127:9090/targets?search=)
+[Targets prometheus](http://158.160.38.127:9090/targets?search=)
 
+![Скриншот-3](https://github.com/Monooks/SYS-DIPLOMA-Neto/blob/main/img/dip_3.png)
 
-ноде экспортер
+#### Ставим node-exporter на оба web-сервера
+
+Вводим команды:
+
 ```bash
 # ssh user@158.160.125.19 -i id_rsa
 $ sudo -i
