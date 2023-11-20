@@ -269,7 +269,7 @@ mkdir /etc/prometheus/node-exporter
 cp ./* /etc/prometheus/node-exporter
 chown -R prometheus:prometheus /etc/prometheus/node-exporter/
 nano /etc/systemd/system/node-exporter.service
-```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
+```
 
 [node-exporter.service](https://github.com/Monooks/SYS-DIPLOMA-Neto/blob/main/img/node-exporter.service)
 
