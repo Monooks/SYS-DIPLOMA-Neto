@@ -221,7 +221,7 @@ nano /etc/systemd/system/prometheus.service
 
 [prometheus.service](https://github.com/Monooks/SYS-DIPLOMA-Neto/blob/main/img/prometheus.service)
 
-```
+```bash
 chown -R prometheus:prometheus /var/lib/prometheus
 systemctl enable prometheus
 sudo systemctl start prometheus
